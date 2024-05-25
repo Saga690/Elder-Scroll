@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         highlightSelection(request.color);
     }
     else if (request.action === 'addNote') {
-        addNoteToSelection();
+        addNoteToSelection(request.color);
     }
 });
 
@@ -92,15 +92,14 @@ console.log("Content Script Loaded");
 
 
 
-function addNoteToSelection() {
+function addNoteToSelection(color) {
     const selection = window.getSelection();
     if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         const note = document.createElement('div');
         note.contentEditable = true;
-        note.style.border = '1px solid black';
-        note.style.borderRadius = '5%';
-        note.style.backgroundColor = '#c6f3f5';
+        note.style.border = '0.5px dashed black';
+        note.style.backgroundColor = color;
         note.style.display = 'inline-block';
         note.style.marginLeft = '5px';
         note.style.padding = '3px';
