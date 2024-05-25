@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Web Annotator",
-    "description": "Annotate webpages with highlights and notes",
+    "name": "Elder Scroll",
+    "description": "Annotate webpages, all in one go",
     "version": "1.0",
     "permissions": ["activeTab"],
     "action": {
