@@ -67,3 +67,22 @@ button:hover {
 #annotationList li {
     margin-bottom: 5px;
 }
+
+@media (max-width: 600px) {
+    body {
+        padding: 5px;
+    }
+
+    h1 {
+        font-size: 1.2em;
+    }
+
+    button {
+        font-size: 0.9em;
+        padding: 8px;
+    }
+
+    input[type="color"] {
+        height: 30px;
+    }
+}
