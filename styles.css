@@ -68,7 +68,33 @@ button:hover {
     margin-bottom: 5px;
 }
 
-@media (max-width: 600px) {
+.searchinput {
+    color: aliceblue;
+    border: none;
+}
+
+.annoexp {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+}
+
+img {
+    object-fit: contain;
+    cursor: pointer;
+}
+
+#searchBtn {
+    padding: 4px 8px;
+}
+
+#searchBtn:hover {
+    background-color: gray;
+    border-color: gray;
+}
+
+
+@media (max-width: 280px) {
     body {
         padding: 5px;
     }
@@ -84,5 +110,9 @@ button:hover {
 
     input[type="color"] {
         height: 30px;
+    }
+
+    .annoexp {
+        gap: 5px;
     }
 }
