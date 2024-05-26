@@ -31,5 +31,11 @@
         },
         "description": "Add note to selected text"
       }
+    },
+    "icons": {
+      "16": "images/img16.png",
+      "32": "images/img32.png",
+      "48": "images/img48.png",
+      "128": "images/img128.png"
     }
   }
