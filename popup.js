@@ -36,6 +36,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+
+    chrome.storage.sync.get({ annotations: [] }, (data) => {
+        const annotations = data.annotations;
+        const annotationList = document.getElementById('annotationList');
+        annotationList.innerHTML = ''; // Clear the list first
+
+        if (annotations.length > 3) {
+            const recentAnnotations = annotations.slice(-3).reverse();
+            recentAnnotations.forEach(annotation => {
+                const li = document.createElement('li');
+                li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+                annotationList.appendChild(li);
+            });
+            const moreLi = document.createElement('li');
+            moreLi.textContent = '...more';
+            annotationList.appendChild(moreLi);
+        } else {
+            const reversedAnnotations = annotations.reverse();
+            reversedAnnotations.forEach(annotation => {
+                const li = document.createElement('li');
+                li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+                annotationList.appendChild(li);
+            });
+        }
+    });
+
+
 });
 
 

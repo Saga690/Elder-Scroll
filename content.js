@@ -35,6 +35,20 @@ function highlightSelection(color) {
         range.insertNode(span);
 
         selection.removeAllRanges();
+
+        // Save annotation to Chrome storage
+        const annotation = {
+            text: selectedText,
+            url: window.location.href,
+            timestamp: Date.now() // To keep track of when the annotation was made
+        };
+
+        chrome.storage.sync.get({ annotations: [] }, (data) => {
+            const annotations = data.annotations;
+            annotations.push(annotation);
+            chrome.storage.sync.set({ annotations: annotations });
+        });
+
     }
     else {
         alert('Please select some text to highlight.');
@@ -63,7 +77,7 @@ function addNoteToSelection(color) {
         note.style.padding = '3px';
         note.style.fontSize = '0.8em';
         note.textContent = 'add note...';
-        range.collapse(false);  
+        range.collapse(false);
         range.insertNode(note);
     }
 }
