@@ -81,7 +81,40 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayAllAnnotations(annotations) {
         const annotationList = document.getElementById('annotationList');
         annotationList.innerHTML = ''; // Clear the list first
-    
+
+        annotations.reverse().forEach(annotation => {
+            const li = document.createElement('li');
+            li.style.color = annotation.color;
+            if (annotation.type === 'note') {
+                li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
+            } else {
+                li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+            }
+            annotationList.appendChild(li);
+        });
+    }
+
+
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        chrome.storage.sync.get({ annotations: [] }, (data) => {
+            const annotations = data.annotations;
+            const filteredAnnotations = annotations.filter(annotation => {
+                const annotationText = annotation.type === 'note'
+                    ? `${annotation.select}: ${annotation.text}`
+                    : annotation.text;
+                return annotationText.toLowerCase().includes(searchTerm);
+            });
+            displayFilteredAnnotations(filteredAnnotations);
+        });
+    });
+
+
+    function displayFilteredAnnotations(annotations) {
+        const annotationList = document.getElementById('annotationList');
+        annotationList.innerHTML = ''; // Clear the list first
+
         annotations.reverse().forEach(annotation => {
             const li = document.createElement('li');
             li.style.color = annotation.color;
