@@ -187,3 +187,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+
+
+
+document.getElementById('exportIcon').addEventListener('click', () => {
+    exportAnnotations();
+});
+
+function exportAnnotations() {
+    chrome.storage.sync.get({ annotations: [] }, (data) => {
+        const annotations = data.annotations;
+        const json = JSON.stringify(annotations, null, 2); // Convert annotations to JSON string with pretty print
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        // Create a temporary anchor element to initiate the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'annotations.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url); // Clean up the URL object
+    });
+}
+
+
+
+
