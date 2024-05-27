@@ -6,6 +6,24 @@
     font-style: normal;
 }
 
+body::-webkit-scrollbar {
+    width: 7px; 
+}
+
+body::-webkit-scrollbar-track {
+    background: #121212; 
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px; 
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+
 body {
     padding: 10px;
     width: 280px;
