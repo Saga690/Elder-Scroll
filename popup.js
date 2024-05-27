@@ -46,8 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const recentAnnotations = annotations.slice(-3).reverse();
             recentAnnotations.forEach(annotation => {
                 const li = document.createElement('li');
+                li.style.color = annotation.color;
                 if (annotation.type == 'note') {
-                    li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
+                    li.textContent = `${annotation.select} : ${annotation.text} (${new URL(annotation.url).hostname})`;
                 }
                 else {
                     li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
@@ -56,11 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const moreLi = document.createElement('li');
             moreLi.textContent = '...more';
+            moreLi.classList.add('more-item');
+            moreLi.addEventListener('click', () => {
+                displayAllAnnotations(annotations);
+            });
             annotationList.appendChild(moreLi);
         } else {
             const reversedAnnotations = annotations.reverse();
             reversedAnnotations.forEach(annotation => {
                 const li = document.createElement('li');
+                li.style.color = annotation.color;
                 if (annotation.type == 'note') {
                     li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
                 }
@@ -71,6 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    function displayAllAnnotations(annotations) {
+        const annotationList = document.getElementById('annotationList');
+        annotationList.innerHTML = ''; // Clear the list first
+    
+        annotations.reverse().forEach(annotation => {
+            const li = document.createElement('li');
+            li.style.color = annotation.color;
+            if (annotation.type === 'note') {
+                li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
+            } else {
+                li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+            }
+            annotationList.appendChild(li);
+        });
+    }
 
 
 });
