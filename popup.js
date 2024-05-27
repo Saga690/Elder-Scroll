@@ -36,9 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-
     chrome.storage.sync.get({ annotations: [] }, (data) => {
         const annotations = data.annotations;
+        displayAnnotations(annotations);
+    });
+
+
+
+    function displayAnnotations(annotations) {
         const annotationList = document.getElementById('annotationList');
         annotationList.innerHTML = ''; // Clear the list first
 
@@ -53,6 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 else {
                     li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
                 }
+                const deleteIcon = document.createElement('span');
+                deleteIcon.textContent = ' \u2716';
+                deleteIcon.style.color = 'red';
+                deleteIcon.style.cursor = 'pointer';
+                deleteIcon.style.marginLeft = '5px';
+                deleteIcon.addEventListener('click', () => {
+                    deleteAnnotation(annotation);
+                });
+                li.appendChild(deleteIcon);
                 annotationList.appendChild(li);
             });
             const moreLi = document.createElement('li');
@@ -73,10 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 else {
                     li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
                 }
+                const deleteIcon = document.createElement('span');
+                deleteIcon.textContent = ' \u2716';
+                deleteIcon.style.color = 'red';
+                deleteIcon.style.cursor = 'pointer';
+                deleteIcon.style.marginLeft = '5px';
+                deleteIcon.addEventListener('click', () => {
+                    deleteAnnotation(annotation);
+                });
+                li.appendChild(deleteIcon);
                 annotationList.appendChild(li);
             });
         }
-    });
+    };
 
     function displayAllAnnotations(annotations) {
         const annotationList = document.getElementById('annotationList');
@@ -90,6 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
             }
+            const deleteIcon = document.createElement('span');
+            deleteIcon.textContent = ' \u2716';
+            deleteIcon.style.color = 'red';
+            deleteIcon.style.cursor = 'pointer';
+            deleteIcon.style.marginLeft = '5px';
+            deleteIcon.addEventListener('click', () => {
+                deleteAnnotation(annotation);
+            });
+            li.appendChild(deleteIcon);
             annotationList.appendChild(li);
         });
     }
@@ -123,9 +155,31 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
             }
+            const deleteIcon = document.createElement('span');
+            deleteIcon.textContent = ' \u2716';
+            deleteIcon.style.color = 'red';
+            deleteIcon.style.cursor = 'pointer';
+            deleteIcon.style.marginLeft = '5px';
+            deleteIcon.addEventListener('click', () => {
+                deleteAnnotation(annotation);
+            });
+            li.appendChild(deleteIcon);
             annotationList.appendChild(li);
         });
     }
+
+
+    function deleteAnnotation(annotationToDelete) {
+        chrome.storage.sync.get({ annotations: [] }, (data) => {
+            const annotations = data.annotations;
+            const updatedAnnotations = annotations.filter(annotation => annotation.timestamp !== annotationToDelete.timestamp);
+            chrome.storage.sync.set({ annotations: updatedAnnotations }, () => {
+                // Update the displayed list immediately after deleting the annotation
+                displayAnnotations(updatedAnnotations);
+            });
+        });
+    }
+
 
 
 });
