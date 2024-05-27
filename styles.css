@@ -80,6 +80,10 @@ button:hover {
     justify-content: space-between;
 }
 
+.ayush {
+    min-width: 80%;
+}
+
 img {
     object-fit: contain;
     cursor: pointer;
