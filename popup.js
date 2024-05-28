@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 annotationList.appendChild(moreLi);
             } else {
-                const reversedAnnotations = rannotations;
+                const reversedAnnotations = rannotations.slice().reverse();
                 reversedAnnotations.forEach(annotation => {
                     const li = document.createElement('li');
                     li.style.color = annotation.color;
