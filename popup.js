@@ -38,74 +38,115 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chrome.storage.sync.get({ annotations: [] }, (data) => {
         const annotations = data.annotations;
-        displayAnnotations(annotations);
+        const groupedAnnotations = groupAnnotationsByDate(annotations);
+        displayAnnotations(groupedAnnotations);
     });
 
+    function groupAnnotationsByDate(annotations) {
+        const grouped = {};
+
+        annotations.forEach(annotation => {
+            const date = new Date(annotation.timestamp).toLocaleDateString();
+            if (!grouped[date]) {
+                grouped[date] = [];
+            }
+            grouped[date].push(annotation);
+        });
+
+        // Sort each group by timestamp in descending order
+        for (const date in grouped) {
+            grouped[date].sort((a, b) => b.timestamp - a.timestamp);
+        }
+
+        return grouped;
+    }
 
 
-    function displayAnnotations(annotations) {
+
+    function displayAnnotations(groupedAnnotations) {
         const annotationList = document.getElementById('annotationList');
         annotationList.innerHTML = ''; // Clear the list first
 
-        if (annotations.length > 3) {
-            const recentAnnotations = annotations.slice(-3).reverse();
-            recentAnnotations.forEach(annotation => {
-                const li = document.createElement('li');
-                li.style.color = annotation.color;
-                if (annotation.type == 'note') {
-                    li.textContent = `${annotation.select} : ${annotation.text} (${new URL(annotation.url).hostname})`;
-                }
-                else {
-                    li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
-                }
-                const deleteIcon = document.createElement('span');
-                deleteIcon.textContent = ' \u2716';
-                deleteIcon.style.color = 'red';
-                deleteIcon.style.cursor = 'pointer';
-                deleteIcon.style.marginLeft = '5px';
-                deleteIcon.addEventListener('click', () => {
-                    deleteAnnotation(annotation);
+        // Get dates in descending order
+        const dates = Object.keys(groupedAnnotations).sort((a, b) => new Date(b) - new Date(a));
+
+        dates.forEach(date => {
+            const dateHeader = document.createElement('li');
+            dateHeader.textContent = date;
+            dateHeader.style.fontWeight = 'bold';
+            dateHeader.style.color = '#CBCED8';
+            annotationList.appendChild(dateHeader);
+
+            const annotations = groupedAnnotations[date];
+            const rannotations = annotations.slice().reverse();
+
+            if (rannotations.length > 3) {
+                const recentAnnotations = rannotations.slice(-3).reverse();
+                recentAnnotations.forEach(annotation => {
+                    const li = document.createElement('li');
+                    li.style.color = annotation.color;
+                    if (annotation.type == 'note') {
+                        li.textContent = `${annotation.select} : ${annotation.text} (${new URL(annotation.url).hostname})`;
+                    }
+                    else {
+                        li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+                    }
+                    const deleteIcon = document.createElement('span');
+                    deleteIcon.textContent = ' \u2716';
+                    deleteIcon.style.color = 'red';
+                    deleteIcon.style.cursor = 'pointer';
+                    deleteIcon.style.marginLeft = '5px';
+                    deleteIcon.addEventListener('click', () => {
+                        deleteAnnotation(annotation);
+                    });
+                    li.appendChild(deleteIcon);
+                    annotationList.appendChild(li);
                 });
-                li.appendChild(deleteIcon);
-                annotationList.appendChild(li);
-            });
-            const moreLi = document.createElement('li');
-            moreLi.textContent = '...more';
-            moreLi.classList.add('more-item');
-            moreLi.addEventListener('click', () => {
-                displayAllAnnotations(annotations);
-            });
-            annotationList.appendChild(moreLi);
-        } else {
-            const reversedAnnotations = annotations.reverse();
-            reversedAnnotations.forEach(annotation => {
-                const li = document.createElement('li');
-                li.style.color = annotation.color;
-                if (annotation.type == 'note') {
-                    li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
-                }
-                else {
-                    li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
-                }
-                const deleteIcon = document.createElement('span');
-                deleteIcon.textContent = ' \u2716';
-                deleteIcon.style.color = 'red';
-                deleteIcon.style.cursor = 'pointer';
-                deleteIcon.style.marginLeft = '5px';
-                deleteIcon.addEventListener('click', () => {
-                    deleteAnnotation(annotation);
+                const moreLi = document.createElement('li');
+                moreLi.textContent = '...more';
+                moreLi.classList.add('more-item');
+                moreLi.addEventListener('click', () => {
+                    displayAllAnnotations(annotations);
                 });
-                li.appendChild(deleteIcon);
-                annotationList.appendChild(li);
-            });
-        }
+                annotationList.appendChild(moreLi);
+            } else {
+                const reversedAnnotations = rannotations;
+                reversedAnnotations.forEach(annotation => {
+                    const li = document.createElement('li');
+                    li.style.color = annotation.color;
+                    if (annotation.type == 'note') {
+                        li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
+                    }
+                    else {
+                        li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+                    }
+                    const deleteIcon = document.createElement('span');
+                    deleteIcon.textContent = ' \u2716';
+                    deleteIcon.style.color = 'red';
+                    deleteIcon.style.cursor = 'pointer';
+                    deleteIcon.style.marginLeft = '5px';
+                    deleteIcon.addEventListener('click', () => {
+                        deleteAnnotation(annotation);
+                    });
+                    li.appendChild(deleteIcon);
+                    annotationList.appendChild(li);
+                });
+            }
+        })
     };
 
     function displayAllAnnotations(annotations) {
         const annotationList = document.getElementById('annotationList');
         annotationList.innerHTML = ''; // Clear the list first
 
-        annotations.reverse().forEach(annotation => {
+        const date = new Date(annotations[0].timestamp).toLocaleDateString();
+        const dateHeader = document.createElement('li');
+        dateHeader.textContent = date;
+        dateHeader.style.fontWeight = 'bold';
+        dateHeader.style.color = '#CBCED8';
+        annotationList.appendChild(dateHeader);
+
+        annotations.forEach(annotation => {
             const li = document.createElement('li');
             li.style.color = annotation.color;
             if (annotation.type === 'note') {
@@ -147,25 +188,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const annotationList = document.getElementById('annotationList');
         annotationList.innerHTML = ''; // Clear the list first
 
-        annotations.reverse().forEach(annotation => {
-            const li = document.createElement('li');
-            li.style.color = annotation.color;
-            if (annotation.type === 'note') {
-                li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
-            } else {
-                li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
-            }
-            const deleteIcon = document.createElement('span');
-            deleteIcon.textContent = ' \u2716';
-            deleteIcon.style.color = 'red';
-            deleteIcon.style.cursor = 'pointer';
-            deleteIcon.style.marginLeft = '5px';
-            deleteIcon.addEventListener('click', () => {
-                deleteAnnotation(annotation);
+        const groupedAnnotations = groupAnnotationsByDate(annotations);
+        const dates = Object.keys(groupedAnnotations).sort((a, b) => new Date(b) - new Date(a));
+
+        dates.forEach(date => {
+            const dateHeader = document.createElement('li');
+            dateHeader.textContent = date;
+            dateHeader.style.fontWeight = 'bold';
+            dateHeader.style.color = '#CBCED8';
+            annotationList.appendChild(dateHeader);
+
+            const dateAnnotations = groupedAnnotations[date];
+
+            dateAnnotations.forEach(annotation => {
+                const li = document.createElement('li');
+                li.style.color = annotation.color;
+                if (annotation.type === 'note') {
+                    li.textContent = `${annotation.select}: ${annotation.text} (${new URL(annotation.url).hostname})`;
+                } else {
+                    li.textContent = `${annotation.text} (${new URL(annotation.url).hostname})`;
+                }
+                const deleteIcon = document.createElement('span');
+                deleteIcon.textContent = ' \u2716';
+                deleteIcon.style.color = 'red';
+                deleteIcon.style.cursor = 'pointer';
+                deleteIcon.style.marginLeft = '5px';
+                deleteIcon.addEventListener('click', () => {
+                    deleteAnnotation(annotation);
+                });
+                li.appendChild(deleteIcon);
+                annotationList.appendChild(li);
             });
-            li.appendChild(deleteIcon);
-            annotationList.appendChild(li);
-        });
+        })
     }
 
 
@@ -174,8 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const annotations = data.annotations;
             const updatedAnnotations = annotations.filter(annotation => annotation.timestamp !== annotationToDelete.timestamp);
             chrome.storage.sync.set({ annotations: updatedAnnotations }, () => {
-                // Update the displayed list immediately after deleting the annotation
-                displayAnnotations(updatedAnnotations);
+                // Refresh the display after deletion
+                const groupedAnnotations = groupAnnotationsByDate(updatedAnnotations);
+                displayAnnotations(groupedAnnotations);
             });
         });
     }
