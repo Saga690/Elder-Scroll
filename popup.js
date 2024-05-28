@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     chrome.storage.sync.get('highlightColor', (data) => {
-        const color = data.highlightColor || '#03daf6';
+        const color = data.highlightColor || '#03daf6'; //mera original color lmfaoo
         document.getElementById('highlightColor').value = color;
     });
 
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             grouped[date].push(annotation);
         });
 
-        // Sort each group by timestamp in descending order
+        
         for (const date in grouped) {
             grouped[date].sort((a, b) => b.timestamp - a.timestamp);
         }
@@ -65,9 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayAnnotations(groupedAnnotations) {
         const annotationList = document.getElementById('annotationList');
-        annotationList.innerHTML = ''; // Clear the list first
+        annotationList.innerHTML = ''; 
 
-        // Get dates in descending order
+        //descending order of dates
         const dates = Object.keys(groupedAnnotations).sort((a, b) => new Date(b) - new Date(a));
 
         dates.forEach(date => {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayAllAnnotations(annotations) {
         const annotationList = document.getElementById('annotationList');
-        annotationList.innerHTML = ''; // Clear the list first
+        annotationList.innerHTML = ''; 
 
         const date = new Date(annotations[0].timestamp).toLocaleDateString();
         const dateHeader = document.createElement('li');
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayFilteredAnnotations(annotations) {
         const annotationList = document.getElementById('annotationList');
-        annotationList.innerHTML = ''; // Clear the list first
+        annotationList.innerHTML = ''; 
 
         const groupedAnnotations = groupAnnotationsByDate(annotations);
         const dates = Object.keys(groupedAnnotations).sort((a, b) => new Date(b) - new Date(a));
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const annotations = data.annotations;
             const updatedAnnotations = annotations.filter(annotation => annotation.timestamp !== annotationToDelete.timestamp);
             chrome.storage.sync.set({ annotations: updatedAnnotations }, () => {
-                // Refresh the display after deletion
+                
                 const groupedAnnotations = groupAnnotationsByDate(updatedAnnotations);
                 displayAnnotations(groupedAnnotations);
             });
@@ -254,18 +254,18 @@ document.getElementById('exportIcon').addEventListener('click', () => {
 function exportAnnotations() {
     chrome.storage.sync.get({ annotations: [] }, (data) => {
         const annotations = data.annotations;
-        const json = JSON.stringify(annotations, null, 2); // Convert annotations to JSON string with pretty print
+        const json = JSON.stringify(annotations, null, 2); 
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
-        // Create a temporary anchor element to initiate the download
+        //temp div download ke liye
         const a = document.createElement('a');
         a.href = url;
         a.download = 'annotations.json';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url); // Clean up the URL object
+        URL.revokeObjectURL(url); 
     });
 }
 

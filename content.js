@@ -36,13 +36,12 @@ function highlightSelection(color) {
 
         selection.removeAllRanges();
 
-        // Save annotation to Chrome storage
         const annotation = {
             text: selectedText,
             url: window.location.href,
             color: color,
             type: 'highlight',
-            timestamp: Date.now() // To keep track of when the annotation was made
+            timestamp: Date.now() 
         };
 
         chrome.storage.sync.get({ annotations: [] }, (data) => {
@@ -89,7 +88,7 @@ function addNoteToSelection(color) {
             color: color,
             type: 'note',
             select: selectedText,
-            timestamp: Date.now() // To keep track of when the note was made
+            timestamp: Date.now() 
         };
 
         chrome.storage.sync.get({ annotations: [] }, (data) => {
