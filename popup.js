@@ -2,14 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    chrome.storage.sync.get('highlightColor', (data) => {
+    chrome.storage.sync.get('highlightColor', (data) => {           //for getting highlight color
         const color = data.highlightColor || '#03daf6'; //mera original color lmfaoo
         document.getElementById('highlightColor').value = color;
     });
 
 
 
-    document.getElementById('highlightColor').addEventListener('change', (event) => {
+    document.getElementById('highlightColor').addEventListener('change', (event) => {           //for setting highlight color on changing
         chrome.storage.sync.set({ highlightColor: event.target.value });
     });
 

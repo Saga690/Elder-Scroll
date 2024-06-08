@@ -36,12 +36,17 @@ function highlightSelection(color) {
 
         selection.removeAllRanges();
 
+        saveHighlight(span);
+
+        const uniqueSelector = getUniqueSelector(span.parentElement);
+
         const annotation = {
             text: selectedText,
             url: window.location.href,
             color: color,
             type: 'highlight',
-            timestamp: Date.now() 
+            timestamp: Date.now(),
+            selector: uniqueSelector
         };
 
         chrome.storage.sync.get({ annotations: [] }, (data) => {
@@ -58,7 +63,36 @@ function highlightSelection(color) {
 
 
 
-console.log("Content Script Loaded");
+function restoreHighlights() {
+    chrome.storage.sync.get('annotations', function (result) {
+        const highlights = result.annotations || [];
+        highlights.forEach(function (highlight) {
+            const elements = document.querySelectorAll(highlight.selector);
+            elements.forEach(function (element) {
+                const innerHTML = element.innerHTML;
+                const highlightedText = `<span style="background-color:${highlight.color}">${highlight.text}</span>`;
+                element.innerHTML = innerHTML.replace(highlight.text, highlightedText);
+            });
+        });
+    });
+}
+
+
+function getUniqueSelector(element) {
+    if (element.id) {
+        return `#${element.id}`;
+    }
+    if (element.className) {
+        return `.${element.className.trim().split(/\s+/).join('.')}`;
+    }
+    return element.tagName.toLowerCase();
+}
+
+
+
+// document.addEventListener('DOMContentLoaded', function () {
+    restoreHighlights();
+// });
 
 
 
@@ -70,6 +104,9 @@ function addNoteToSelection(color) {
     if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         const selectedText = range.toString();
+        
+        highlightSelection(color);  //imp
+
         const note = document.createElement('div');
         note.contentEditable = true;
         note.style.border = '0.5px dashed black';
@@ -88,7 +125,7 @@ function addNoteToSelection(color) {
             color: color,
             type: 'note',
             select: selectedText,
-            timestamp: Date.now() 
+            timestamp: Date.now()
         };
 
         chrome.storage.sync.get({ annotations: [] }, (data) => {
@@ -110,3 +147,9 @@ function addNoteToSelection(color) {
         });
     }
 }
+
+
+
+
+
+console.log("Content Script Loaded");
