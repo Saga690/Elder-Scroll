@@ -37,5 +37,11 @@
       "32": "images/img32.png",
       "48": "images/img48.png",
       "128": "images/img128.png"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["lib/jspdf.umd.min.js"],
+            "matches": ["<all_urls>"]
+        }
+    ]
   }

@@ -252,39 +252,63 @@ document.getElementById('exportIcon').addEventListener('click', () => {
 });
 
 function exportAnnotations() {
+    // Ensure jsPDF is loaded
+    if (typeof window.jspdf === 'undefined') {
+        console.error('jsPDF is not loaded.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+
     chrome.storage.sync.get({ annotations: [] }, (data) => {
         const annotations = data.annotations;
 
         const highlights = annotations.filter(annotation => annotation.type === 'highlight');
         const notes = annotations.filter(annotation => annotation.type === 'note');
 
-        let exportText = '';
+        // Initialize jsPDF
+        const doc = new jsPDF();
+
+        let yOffset = 10; // Initial Y offset
 
         if (highlights.length > 0) {
-            exportText += 'Highlights:\n';
+            doc.setFontSize(16);
+            doc.text('Highlights:', 10, yOffset);
+            yOffset += 10;
+
             highlights.forEach(highlight => {
-                exportText += `- Text: ${highlight.text}\n  Color: ${highlight.color}\n  URL: ${highlight.url}\n\n`;
+                doc.setFontSize(12);
+                doc.setTextColor(highlight.color);
+                doc.text(`Highlight: ${highlight.text}`, 10, yOffset);
+                yOffset += 10;
+                doc.setTextColor(0, 0, 0);
+                // doc.text(`Color: ${highlight.color}`, 10, yOffset);
+                // yOffset += 10;
+                doc.text(`URL: ${highlight.url}`, 10, yOffset);
+                yOffset += 10;
             });
         }
 
         if (notes.length > 0) {
-            exportText += 'Notes:\n';
+            yOffset += 10; // Add some space before notes
+            doc.setFontSize(16);
+            doc.text('Notes:', 10, yOffset);
+            yOffset += 10;
+
             notes.forEach(note => {
-                exportText += `- Text: ${note.text}\n  Color: ${note.color}\n  URL: ${note.url}\n  Selected Text: ${note.select}\n\n`;
+                doc.setFontSize(12);
+                doc.setTextColor(note.color);
+                doc.text(`Note: ${note.text}`, 10, yOffset);
+                yOffset += 10;
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Text: ${note.select}`, 10, yOffset);
+                yOffset += 7;
+                doc.text(`URL: ${note.url}`, 10, yOffset);
+                yOffset += 10;
             });
         }
 
-        const blob = new Blob([exportText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-
-        //temp div download ke liye
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'annotations.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url); 
+        doc.save('annotations.pdf');
     });
 }
 
