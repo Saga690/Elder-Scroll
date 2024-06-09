@@ -254,14 +254,33 @@ document.getElementById('exportIcon').addEventListener('click', () => {
 function exportAnnotations() {
     chrome.storage.sync.get({ annotations: [] }, (data) => {
         const annotations = data.annotations;
-        const json = JSON.stringify(annotations, null, 2); 
-        const blob = new Blob([json], { type: 'application/json' });
+
+        const highlights = annotations.filter(annotation => annotation.type === 'highlight');
+        const notes = annotations.filter(annotation => annotation.type === 'note');
+
+        let exportText = '';
+
+        if (highlights.length > 0) {
+            exportText += 'Highlights:\n';
+            highlights.forEach(highlight => {
+                exportText += `- Text: ${highlight.text}\n  Color: ${highlight.color}\n  URL: ${highlight.url}\n\n`;
+            });
+        }
+
+        if (notes.length > 0) {
+            exportText += 'Notes:\n';
+            notes.forEach(note => {
+                exportText += `- Text: ${note.text}\n  Color: ${note.color}\n  URL: ${note.url}\n  Selected Text: ${note.select}\n\n`;
+            });
+        }
+
+        const blob = new Blob([exportText], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
 
         //temp div download ke liye
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'annotations.json';
+        a.download = 'annotations.txt';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
