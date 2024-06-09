@@ -36,8 +36,6 @@ function highlightSelection(color) {
 
         selection.removeAllRanges();
 
-        saveHighlight(span);
-
         const uniqueSelector = getUniqueSelector(span.parentElement);
 
         const annotation = {
