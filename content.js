@@ -61,15 +61,20 @@ function highlightSelection(color) {
 
 
 
-function restoreHighlights() {
+function restoreHighlightsandNotes() {
     chrome.storage.sync.get('annotations', function (result) {
-        const highlights = result.annotations || [];
-        highlights.forEach(function (highlight) {
-            const elements = document.querySelectorAll(highlight.selector);
+        const annotations = result.annotations || [];
+        annotations.forEach(function (annotation) {
+            const elements = document.querySelectorAll(annotation.selector);
             elements.forEach(function (element) {
                 const innerHTML = element.innerHTML;
-                const highlightedText = `<span style="background-color:${highlight.color}">${highlight.text}</span>`;
-                element.innerHTML = innerHTML.replace(highlight.text, highlightedText);
+                if (annotation.type === 'highlight') {
+                    const highlightedText = `<span style="background-color:${annotation.color}">${annotation.text}</span>`;
+                    element.innerHTML = innerHTML.replace(annotation.text, highlightedText);
+                } else if (annotation.type === 'note') {
+                    const noteText = `<span style="background-color:${annotation.color}">${annotation.select}</span><div contentEditable="true" style="border: 0.5px dashed black; background-color:${annotation.color}; display: inline-block; margin-left: 5px; padding: 3px; font-size: 0.8em;">${annotation.text}</div>`;
+                    element.innerHTML = innerHTML.replace(annotation.select, noteText);
+                }
             });
         });
     });
@@ -89,7 +94,7 @@ function getUniqueSelector(element) {
 
 
 // document.addEventListener('DOMContentLoaded', function () {
-    restoreHighlights();
+    restoreHighlightsandNotes();
 // });
 
 
@@ -103,7 +108,7 @@ function addNoteToSelection(color) {
         const range = selection.getRangeAt(0);
         const selectedText = range.toString();
         
-        highlightSelection(color);  //imp
+        highlightSelection(color);  // Highlight the selection
 
         const note = document.createElement('div');
         note.contentEditable = true;
@@ -117,13 +122,16 @@ function addNoteToSelection(color) {
         range.collapse(false);
         range.insertNode(note);
 
+        const uniqueSelector = getUniqueSelector(note.parentElement);
+
         const annotation = {
             text: note.textContent,
             url: window.location.href,
             color: color,
             type: 'note',
             select: selectedText,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            selector: uniqueSelector
         };
 
         chrome.storage.sync.get({ annotations: [] }, (data) => {
