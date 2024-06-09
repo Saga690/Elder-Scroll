@@ -2,14 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    chrome.storage.sync.get('highlightColor', (data) => {           //for getting highlight color
-        const color = data.highlightColor || '#03daf6'; //mera original color lmfaoo
+    chrome.storage.sync.get('highlightColor', (data) => {           
+        const color = data.highlightColor || '#03daf6'; 
         document.getElementById('highlightColor').value = color;
     });
 
 
 
-    document.getElementById('highlightColor').addEventListener('change', (event) => {           //for setting highlight color on changing
+    document.getElementById('highlightColor').addEventListener('change', (event) => {           
         chrome.storage.sync.set({ highlightColor: event.target.value });
     });
 
@@ -252,7 +252,7 @@ document.getElementById('exportIcon').addEventListener('click', () => {
 });
 
 function exportAnnotations() {
-    // Ensure jsPDF is loaded
+    
     if (typeof window.jspdf === 'undefined') {
         console.error('jsPDF is not loaded.');
         return;
@@ -266,10 +266,9 @@ function exportAnnotations() {
         const highlights = annotations.filter(annotation => annotation.type === 'highlight');
         const notes = annotations.filter(annotation => annotation.type === 'note');
 
-        // Initialize jsPDF
         const doc = new jsPDF();
 
-        let yOffset = 10; // Initial Y offset
+        let yOffset = 10; 
 
         if (highlights.length > 0) {
             doc.setFontSize(16);
@@ -282,15 +281,13 @@ function exportAnnotations() {
                 doc.text(`Highlight: ${highlight.text}`, 10, yOffset);
                 yOffset += 10;
                 doc.setTextColor(0, 0, 0);
-                // doc.text(`Color: ${highlight.color}`, 10, yOffset);
-                // yOffset += 10;
                 doc.text(`URL: ${highlight.url}`, 10, yOffset);
                 yOffset += 10;
             });
         }
 
         if (notes.length > 0) {
-            yOffset += 10; // Add some space before notes
+            yOffset += 10; 
             doc.setFontSize(16);
             doc.text('Notes:', 10, yOffset);
             yOffset += 10;

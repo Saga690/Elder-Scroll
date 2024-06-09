@@ -93,9 +93,7 @@ function getUniqueSelector(element) {
 
 
 
-// document.addEventListener('DOMContentLoaded', function () {
     restoreHighlightsandNotes();
-// });
 
 
 
@@ -108,7 +106,7 @@ function addNoteToSelection(color) {
         const range = selection.getRangeAt(0);
         const selectedText = range.toString();
         
-        highlightSelection(color);  // Highlight the selection
+        highlightSelection(color);  
 
         const note = document.createElement('div');
         note.contentEditable = true;
