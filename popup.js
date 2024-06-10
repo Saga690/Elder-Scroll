@@ -281,7 +281,7 @@ function exportAnnotations() {
                 doc.setFontSize(10);
                 doc.setTextColor(highlight.color);
 
-                let lines = doc.splitTextToSize(`Text: ${highlight.text}`, pageWidth - margin * 2);
+                let lines = doc.splitTextToSize(`Highlight: ${highlight.text}`, pageWidth - margin * 2);
                 doc.text(lines, 10, yOffset);
                 yOffset += lines.length * 10;
 
@@ -289,7 +289,12 @@ function exportAnnotations() {
 
                 lines = doc.splitTextToSize(`URL: ${highlight.url}`, pageWidth - margin * 2);
                 doc.text(lines, 10, yOffset);
-                yOffset += lines.length *  20;
+                yOffset += lines.length *  7;
+
+                const date = new Date(highlight.timestamp).toLocaleString();
+                lines = doc.splitTextToSize(`Date: ${date}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length * 20;
             });
         }
 
@@ -303,17 +308,22 @@ function exportAnnotations() {
                 doc.setFontSize(10);
                 doc.setTextColor(note.color);
 
-                let lines = doc.splitTextToSize(`Text: ${note.text}`, pageWidth - margin * 2);
+                let lines = doc.splitTextToSize(`Note: ${note.text}`, pageWidth - margin * 2);
                 doc.text(lines, 10, yOffset);
                 yOffset += lines.length *  10;
 
                 doc.setTextColor(0, 0, 0);
 
-                lines = doc.splitTextToSize(`Selected Text: ${note.select}`, pageWidth - margin * 2);
+                lines = doc.splitTextToSize(`Text: ${note.select}`, pageWidth - margin * 2);
                 doc.text(lines, 10, yOffset);
                 yOffset += lines.length * 7;
 
                 lines = doc.splitTextToSize(`URL: ${note.url}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length * 7;
+
+                const date = new Date(note.timestamp).toLocaleString();
+                lines = doc.splitTextToSize(`Date: ${date}`, pageWidth - margin * 2);
                 doc.text(lines, 10, yOffset);
                 yOffset += lines.length * 20;
             });
