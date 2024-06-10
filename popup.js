@@ -272,9 +272,15 @@ function exportAnnotations() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const margin = 10;
 
+        function addBoldText(text, x, y) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(text, x, y);
+            doc.setFont('helvetica', 'normal'); 
+        }
+
         if (highlights.length > 0) {
             doc.setFontSize(16);
-            doc.text('Highlights:', 10, yOffset);
+            addBoldText('Highlights:', 10, yOffset);
             yOffset += 10;
 
             highlights.forEach(highlight => {
@@ -301,7 +307,7 @@ function exportAnnotations() {
         if (notes.length > 0) {
             yOffset += 10; 
             doc.setFontSize(16);
-            doc.text('Notes:', 10, yOffset);
+            addBoldText('Notes:', 10, yOffset);
             yOffset += 10;
 
             notes.forEach(note => {
