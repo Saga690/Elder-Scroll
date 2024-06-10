@@ -269,6 +269,8 @@ function exportAnnotations() {
         const doc = new jsPDF();
 
         let yOffset = 10; 
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 10;
 
         if (highlights.length > 0) {
             doc.setFontSize(16);
@@ -276,13 +278,18 @@ function exportAnnotations() {
             yOffset += 10;
 
             highlights.forEach(highlight => {
-                doc.setFontSize(12);
+                doc.setFontSize(10);
                 doc.setTextColor(highlight.color);
-                doc.text(`Highlight: ${highlight.text}`, 10, yOffset);
-                yOffset += 10;
+
+                let lines = doc.splitTextToSize(`Text: ${highlight.text}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length * 10;
+
                 doc.setTextColor(0, 0, 0);
-                doc.text(`URL: ${highlight.url}`, 10, yOffset);
-                yOffset += 10;
+
+                lines = doc.splitTextToSize(`URL: ${highlight.url}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length *  20;
             });
         }
 
@@ -293,15 +300,22 @@ function exportAnnotations() {
             yOffset += 10;
 
             notes.forEach(note => {
-                doc.setFontSize(12);
+                doc.setFontSize(10);
                 doc.setTextColor(note.color);
-                doc.text(`Note: ${note.text}`, 10, yOffset);
-                yOffset += 10;
+
+                let lines = doc.splitTextToSize(`Text: ${note.text}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length *  10;
+
                 doc.setTextColor(0, 0, 0);
-                doc.text(`Text: ${note.select}`, 10, yOffset);
-                yOffset += 7;
-                doc.text(`URL: ${note.url}`, 10, yOffset);
-                yOffset += 10;
+
+                lines = doc.splitTextToSize(`Selected Text: ${note.select}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length * 7;
+
+                lines = doc.splitTextToSize(`URL: ${note.url}`, pageWidth - margin * 2);
+                doc.text(lines, 10, yOffset);
+                yOffset += lines.length * 20;
             });
         }
 
